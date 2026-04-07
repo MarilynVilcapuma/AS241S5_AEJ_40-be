@@ -1,13 +1,13 @@
-package com.example.detectoria_nosql;
+package com.example.instgrania_sql;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DetectorIaNoSqlApplication {
+public class InstgranIaSqlApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DetectorIaNoSqlApplication.class, args);
+        SpringApplication.run(InstgranIaSqlApplication.class, args);
     }
 
 }

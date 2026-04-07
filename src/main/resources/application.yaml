@@ -1,19 +1,26 @@
 server:
-  port: 8082
+  port: 8084
 
 spring:
   application:
-    name: ms-spring-webflux-nosql
-  data:
-    mongodb:
-      uri: mongodb+srv://marilynangy_db_user:CY7qK7T29YManX0o@cluster0.mbktsnp.mongodb.net/44_marilyn_vilapuma?appName=Cluster0
+    name: InstgranIA_SQL
+  r2dbc:
+    url: r2dbc:postgresql://ep-noisy-rain-anq1bkk7-pooler.c-6.us-east-1.aws.neon.tech/api_instagram?sslMode=require
+    username: neondb_owner
+    password: npg_tWwEiO36fqGM
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
 
 rapidapi:
-  base-url: https://ai-detection4.p.rapidapi.com
-  path: /v1/ai-detection-rapid-api
-  host: ai-detection4.p.rapidapi.com
   key: 1987249da0msh6f674509859f8a2p10a9dejsn8d6d1b059dbb
-  timeout-seconds: 15
+  host: instagram120.p.rapidapi.com
+  base-url: https://instagram120.p.rapidapi.com
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
 
 springdoc:
   api-docs:
