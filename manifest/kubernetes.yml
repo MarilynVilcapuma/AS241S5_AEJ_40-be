@@ -86,7 +86,7 @@ kubectl port-forward service/marilyn-vilcapuma-44-service 8082:8082 -n marilyn-v
 curl -X POST http://localhost:8082/api/detection \
   -H "Content-Type: application/json" \
   -d '{"text": "This text was written by a human."}'
-
+curl http://192.168.49.2:30001/api/detection
 # ─────────────────────────────────────────────
 # SWAGGER UI
 # ─────────────────────────────────────────────

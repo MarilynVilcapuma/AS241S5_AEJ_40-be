@@ -1,5 +1,5 @@
 # kubectl create namespace marilyn-vilapuma-44-namespace (COMANDO)
-# kubectl apply -f juan-condori-00-namespace.yml (yml)
+# kubectl apply -f marilyn-vilcapuma-44-namespace.yml (yml)
 apiVersion: v1
 kind: Namespace
 metadata:

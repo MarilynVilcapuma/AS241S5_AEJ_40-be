@@ -1,4 +1,4 @@
-# kubectl apply -f marilyn-vilcapuma-44-service.yml
+# kubectl apply -f marilyn-vilcapuma-44-serivice.yml
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,7 +7,7 @@ metadata:
 spec:
   type: NodePort      #30000-32767  # Cambia a LoadBalancer si estás en un entorno de nube
   ports:
-    - port: 30001       # Puerto que el Service expondrá
+    - port: 8082       # Puerto que el Service expondrá
       targetPort: 8082  # Puerto en el contenedor donde tu aplicación escucha
       nodePort: 30001   # Puerto asignado en el nodo, opcional
   selector:
