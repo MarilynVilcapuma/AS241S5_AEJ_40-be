@@ -18,7 +18,7 @@ spec:
       containers:
       - name: marilyn-vilcapuma-44-container
         image: marilynvilcapuma/detector-ia-be:1.0
-        imagePullPolicy: IfNotPresent 
+        imagePullPolicy: Always 
         ports:
           - containerPort: 8082
         envFrom:
