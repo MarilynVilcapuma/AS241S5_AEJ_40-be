@@ -1,0 +1,95 @@
+# MINIKUBE FUNCIONA EN CODESPACE | LOCAL
+# KUBECTL FUNCIONA DIRECTO EN KILLERCODA (SIN MINIKUBE)
+
+# consultar versión de minikube
+minikube --version
+
+# consultar si minikube esta en start o stop
+minikube status
+
+# iniciar clúster kubernetes
+minikube start
+
+# ingresar a la carpeta de los manifiestos de kubernetes (manifest)
+cd manifest
+
+# ─────────────────────────────────────────────
+# IMAGEN: construir y cargar en minikube
+# ─────────────────────────────────────────────
+
+# apuntar Docker al daemon de minikube (para que minikube vea la imagen local)
+eval $(minikube docker-env)
+
+# construir la imagen dentro del daemon de minikube
+docker build -t marilynvilcapuma/detector-ia-be:1.0 ..
+
+# (alternativa) si subes la imagen a Docker Hub, omite los dos pasos anteriores
+# y usa imagePullPolicy: Always en el Deployment
+
+# ─────────────────────────────────────────────
+# NAMESPACE
+# ─────────────────────────────────────────────
+
+# listar namespaces
+kubectl get namespace
+kubectl get ns
+
+# crear namespace mediante archivo yml
+kubectl apply -f marilyn-vilcapuma-44-namespace.yml
+
+# ─────────────────────────────────────────────
+# APLICAR MANIFIESTOS
+# ─────────────────────────────────────────────
+
+# aplicar secret
+kubectl apply -f marilyn-vilcapuma-44-secret.yml
+
+# aplicar deployment
+kubectl apply -f marilyn-vilcapuma-44-deployment.yml
+
+# aplicar service
+kubectl apply -f marilyn-vilcapuma-44-serivice.yml
+
+# ─────────────────────────────────────────────
+# CONSULTAS
+# ─────────────────────────────────────────────
+
+# consultar namespace en uso | LINUX / CODESPACE
+kubectl config view --minify | grep namespace
+
+# cambiar namespace activo
+kubectl config set-context --current --namespace=marilyn-vilcapuma-44-namespace
+
+# consultar todos los recursos del namespace
+kubectl get all -n marilyn-vilcapuma-44-namespace
+
+# consultar recursos + secrets del namespace
+kubectl get all,secrets -n marilyn-vilcapuma-44-namespace
+
+# ver logs de un pod
+kubectl logs -l app=marilyn-vilcapuma-44-deployment -n marilyn-vilcapuma-44-namespace
+
+# ─────────────────────────────────────────────
+# ACCESO AL SERVICIO EN CODESPACE / MINIKUBE
+# ─────────────────────────────────────────────
+
+# listar servicios disponibles en minikube
+minikube service list
+
+# abrir el servicio en el navegador (minikube)
+minikube service marilyn-vilcapuma-44-service -n marilyn-vilcapuma-44-namespace
+
+# tunnel de puerto: accede en http://localhost:8082
+kubectl port-forward service/marilyn-vilcapuma-44-service 8082:8082 -n marilyn-vilcapuma-44-namespace
+
+# probar el endpoint con curl (después del port-forward)
+curl -X POST http://localhost:8082/api/detection \
+  -H "Content-Type: application/json" \
+  -d '{"text": "This text was written by a human."}'
+
+# ─────────────────────────────────────────────
+# SWAGGER UI
+# ─────────────────────────────────────────────
+
+# acceder a la documentación (después del port-forward)
+# http://localhost:8082/swagger-ui.html

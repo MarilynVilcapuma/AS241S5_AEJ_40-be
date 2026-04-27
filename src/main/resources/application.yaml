@@ -6,13 +6,13 @@ spring:
     name: ms-spring-webflux-nosql
   data:
     mongodb:
-      uri: mongodb+srv://marilynangy_db_user:CY7qK7T29YManX0o@cluster0.mbktsnp.mongodb.net/44_marilyn_vilapuma?appName=Cluster0
+      uri: ${MONGODB_URI}
 
 rapidapi:
-  base-url: https://ai-detection4.p.rapidapi.com
-  path: /v1/ai-detection-rapid-api
-  host: ai-detection4.p.rapidapi.com
-  key: 1987249da0msh6f674509859f8a2p10a9dejsn8d6d1b059dbb
+  base-url: ${RAPIDAPI_BASE_URL}
+  path: ${RAPIDAPI_PATH}
+  host: ${RAPIDAPI_HOST}
+  key: ${RAPIDAPI_KEY}
   timeout-seconds: 15
 
 springdoc:

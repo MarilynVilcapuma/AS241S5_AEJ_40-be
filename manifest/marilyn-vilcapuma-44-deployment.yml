@@ -1,0 +1,26 @@
+# kubectl apply -f marilyn-vilcapuma-44-deployment.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marilyn-vilcapuma-44-deployment
+  namespace: marilyn-vilcapuma-44-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: marilyn-vilcapuma-44-deployment
+  template:
+    metadata:
+      labels:
+        app: marilyn-vilcapuma-44-deployment
+    spec:
+      containers:
+      - name: marilyn-vilcapuma-44-container
+        image: marilynvilcapuma/detector-ia-be:1.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8082
+        envFrom:
+         - secretRef:
+             name: marilyn-vilcapuma-44-secret
