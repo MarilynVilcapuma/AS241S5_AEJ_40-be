@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -35,6 +36,10 @@ public class RapidApiDetectorService {
         this.host = host;
         this.apiKey = apiKey;
         this.endpointPath = endpointPath;
+    }
+
+    public Flux<DetectionDocument> getAllDetections() {
+        return repository.findAll();
     }
 
     public Mono<DetectionResultResponse> detectText(DetectRequest request) {
