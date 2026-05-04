@@ -12,4 +12,8 @@ public interface PostRepository extends ReactiveCrudRepository<Post, Long> {
     Flux<Post> findByUsername(String username);
 
     Mono<Post> findBySourceUrl(String sourceUrl);
+
+    Flux<Post> findByUsernameAndActive(String username, Boolean active);
+
+    Flux<Post> findByActive(Boolean active);
 }

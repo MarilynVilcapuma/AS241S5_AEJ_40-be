@@ -3,10 +3,13 @@ package com.example.instgrania_sql.repository;
 import com.example.instgrania_sql.model.Profile;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
 public interface ProfileRepository extends ReactiveCrudRepository<Profile, Long> {
 
     Mono<Profile> findByUsername(String username);
+
+    Flux<Profile> findByActive(Boolean active);
 }

@@ -23,14 +23,13 @@ public class Profile {
     private String fullName;
     private String bio;
     private String profilePicUrl;
-    private Boolean isVerified;
-    private Boolean isBusiness;
-    private String category;
-    private String externalUrl;
+
     private Long followersCount;
     private Long followingCount;
     private Integer postsCount;
-    private Double avgEngagementRate;
-    private LocalDateTime lastFetchedAt;
+
+    private Boolean isVerified;
+
+    private Boolean active;
     private LocalDateTime savedAt;
 }

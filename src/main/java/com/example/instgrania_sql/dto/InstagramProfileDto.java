@@ -28,9 +28,6 @@ public class InstagramProfileDto {
     @JsonProperty("is_business_account")
     private Boolean isBusiness;
 
-    @JsonProperty("business_category_name")
-    private String category;
-
     @JsonProperty("external_url")
     private String externalUrl;
 

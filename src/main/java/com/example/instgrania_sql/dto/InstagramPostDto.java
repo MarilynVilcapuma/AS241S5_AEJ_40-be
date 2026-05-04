@@ -42,15 +42,4 @@ public class InstagramPostDto {
         if (urls != null && !urls.isEmpty()) return urls.get(0).getExtension();
         return null;
     }
-
-    public String getType() {
-        if (urls == null || urls.isEmpty()) return null;
-        String ext = urls.get(0).getExtension();
-        if (ext == null) return null;
-        return switch (ext.toLowerCase()) {
-            case "mp4" -> "VIDEO";
-            case "jpg", "jpeg", "png", "webp" -> "IMAGE";
-            default -> ext.toUpperCase();
-        };
-    }
 }
