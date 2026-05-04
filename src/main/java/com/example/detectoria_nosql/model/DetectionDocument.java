@@ -21,6 +21,7 @@ public class DetectionDocument {
     private Double aiScore;
     private Integer totalWords;
     private String lang;
+    private Boolean active = true;
     private LocalDateTime createdAt;
 
     public DetectionDocument(String inputText, String verdict, Double humanScore,
@@ -31,6 +32,7 @@ public class DetectionDocument {
         this.aiScore = aiScore;
         this.totalWords = totalWords;
         this.lang = lang;
+        this.active = true;
         this.createdAt = LocalDateTime.now();
     }
 }

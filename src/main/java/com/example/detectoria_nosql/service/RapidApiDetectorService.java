@@ -3,6 +3,7 @@ package com.example.detectoria_nosql.service;
 import com.example.detectoria_nosql.dto.DetectRequest;
 import com.example.detectoria_nosql.dto.DetectResponse;
 import com.example.detectoria_nosql.dto.DetectionResultResponse;
+import com.example.detectoria_nosql.dto.UpdateDetectionRequest;
 import com.example.detectoria_nosql.model.DetectionDocument;
 import com.example.detectoria_nosql.repository.DetectionRepository;
 import org.slf4j.Logger;
@@ -40,6 +41,42 @@ public class RapidApiDetectorService {
 
     public Flux<DetectionDocument> getAllDetections() {
         return repository.findAll();
+    }
+
+    public Mono<DetectionDocument> getById(String id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)));
+    }
+
+    public Mono<DetectionDocument> updateDetection(String id, UpdateDetectionRequest request) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)))
+                .flatMap(doc -> {
+                    if (request.getVerdict()    != null) doc.setVerdict(request.getVerdict());
+                    if (request.getHumanScore() != null) doc.setHumanScore(request.getHumanScore());
+                    if (request.getAiScore()    != null) doc.setAiScore(request.getAiScore());
+                    if (request.getTotalWords() != null) doc.setTotalWords(request.getTotalWords());
+                    if (request.getLang()       != null) doc.setLang(request.getLang());
+                    return repository.save(doc);
+                });
+    }
+
+    public Mono<DetectionDocument> deactivate(String id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)))
+                .flatMap(doc -> {
+                    doc.setActive(false);
+                    return repository.save(doc);
+                });
+    }
+
+    public Mono<DetectionDocument> restore(String id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)))
+                .flatMap(doc -> {
+                    doc.setActive(true);
+                    return repository.save(doc);
+                });
     }
 
     public Mono<DetectionResultResponse> detectText(DetectRequest request) {
