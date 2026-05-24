@@ -5,6 +5,7 @@ import com.example.detectoria_nosql.dto.DetectionResultResponse;
 import com.example.detectoria_nosql.dto.UpdateDetectionRequest;
 import com.example.detectoria_nosql.model.DetectionDocument;
 import com.example.detectoria_nosql.service.RapidApiDetectorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,13 +20,10 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/detection")
+@RequiredArgsConstructor
 public class DetectorController {
 
     private final RapidApiDetectorService detectorService;
-
-    public DetectorController(RapidApiDetectorService detectorService) {
-        this.detectorService = detectorService;
-    }
 
     @GetMapping
     public Flux<DetectionDocument> getAllDetections() {
@@ -34,9 +32,7 @@ public class DetectorController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<DetectionDocument>> getById(@PathVariable String id) {
-        return detectorService.getById(id)
-                .map(ResponseEntity::ok)
-                .onErrorReturn(IllegalArgumentException.class, ResponseEntity.notFound().build());
+        return okOrNotFound(detectorService.getById(id));
     }
 
     @PostMapping
@@ -49,21 +45,21 @@ public class DetectorController {
     public Mono<ResponseEntity<DetectionDocument>> update(
             @PathVariable String id,
             @RequestBody UpdateDetectionRequest request) {
-        return detectorService.updateDetection(id, request)
-                .map(ResponseEntity::ok)
-                .onErrorReturn(IllegalArgumentException.class, ResponseEntity.notFound().build());
+        return okOrNotFound(detectorService.updateDetection(id, request));
     }
 
     @PatchMapping("/{id}/deactivate")
     public Mono<ResponseEntity<DetectionDocument>> deactivate(@PathVariable String id) {
-        return detectorService.deactivate(id)
-                .map(ResponseEntity::ok)
-                .onErrorReturn(IllegalArgumentException.class, ResponseEntity.notFound().build());
+        return okOrNotFound(detectorService.deactivate(id));
     }
 
     @PatchMapping("/{id}/restore")
     public Mono<ResponseEntity<DetectionDocument>> restore(@PathVariable String id) {
-        return detectorService.restore(id)
+        return okOrNotFound(detectorService.restore(id));
+    }
+
+    private <T> Mono<ResponseEntity<T>> okOrNotFound(Mono<T> source) {
+        return source
                 .map(ResponseEntity::ok)
                 .onErrorReturn(IllegalArgumentException.class, ResponseEntity.notFound().build());
     }

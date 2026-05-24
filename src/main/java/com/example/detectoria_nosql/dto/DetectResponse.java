@@ -36,10 +36,4 @@ public class DetectResponse {
         private Double mixed;
     }
 
-    public String getVerdict() {
-        if (summary == null) return "UNKNOWN";
-        if (summary.getHuman() >= 0.5) return "HUMAN";
-        if (summary.getAi() >= 0.5) return "AI";
-        return "MIXED";
-    }
 }

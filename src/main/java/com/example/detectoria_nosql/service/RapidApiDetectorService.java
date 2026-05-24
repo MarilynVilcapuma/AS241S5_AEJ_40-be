@@ -44,13 +44,11 @@ public class RapidApiDetectorService {
     }
 
     public Mono<DetectionDocument> getById(String id) {
-        return repository.findById(id)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)));
+        return findByIdOrError(id);
     }
 
     public Mono<DetectionDocument> updateDetection(String id, UpdateDetectionRequest request) {
-        return repository.findById(id)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)))
+        return findByIdOrError(id)
                 .flatMap(doc -> {
                     if (request.getVerdict()    != null) doc.setVerdict(request.getVerdict());
                     if (request.getHumanScore() != null) doc.setHumanScore(request.getHumanScore());
@@ -62,8 +60,7 @@ public class RapidApiDetectorService {
     }
 
     public Mono<DetectionDocument> deactivate(String id) {
-        return repository.findById(id)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)))
+        return findByIdOrError(id)
                 .flatMap(doc -> {
                     doc.setActive(false);
                     return repository.save(doc);
@@ -71,8 +68,7 @@ public class RapidApiDetectorService {
     }
 
     public Mono<DetectionDocument> restore(String id) {
-        return repository.findById(id)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)))
+        return findByIdOrError(id)
                 .flatMap(doc -> {
                     doc.setActive(true);
                     return repository.save(doc);
@@ -89,28 +85,39 @@ public class RapidApiDetectorService {
                 .retrieve()
                 .bodyToMono(DetectResponse.class)
                 .flatMap(response -> {
-                    String verdict = response.getVerdict();
-                    Double humanScore = response.getSummary() != null ? response.getSummary().getHuman() : null;
-                    Double aiScore = response.getAiScore();
+                    DetectResponse.Summary summary = response.getSummary();
+                    String verdict = calculateVerdict(summary);
+                    Double humanScore = summary != null ? summary.getHuman() : null;
+                    Double aiScore = summary != null ? summary.getAi() : response.getAiScore();
 
                     DetectionDocument doc = new DetectionDocument(
-                            request.getText(),
-                            verdict,
-                            humanScore,
-                            aiScore,
-                            response.getTotalNumWords(),
-                            response.getLang()
+                            request.getText(), verdict, humanScore, aiScore,
+                            response.getTotalNumWords(), response.getLang()
                     );
 
                     return repository.save(doc)
-                            .doOnSuccess(saved -> log.info("Detection saved with id: {} | verdict: {}", saved.getId(), saved.getVerdict()))
-                            .doOnError(ex -> log.error("Failed to save to MongoDB: {}", ex.getMessage()))
+                            .doOnSuccess(saved -> log.info("Detection saved id={} verdict={}", saved.getId(), saved.getVerdict()))
+                            .doOnError(ex -> log.error("Failed to save detection: {}", ex.getMessage()))
                             .thenReturn(new DetectionResultResponse(verdict, humanScore, aiScore, response.getTotalNumWords(), response.getLang()));
                 })
                 .onErrorResume(WebClientResponseException.class, ex -> {
-                    log.error("RapidAPI request failed: {} - {}", ex.getStatusCode(), ex.getResponseBodyAsString());
+                    log.error("RapidAPI error: {} - {}", ex.getStatusCode(), ex.getResponseBodyAsString());
                     return Mono.error(new IllegalStateException(
                             "RapidAPI request failed: " + ex.getStatusCode() + " " + ex.getResponseBodyAsString(), ex));
                 });
+    }
+
+    private Mono<DetectionDocument> findByIdOrError(String id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Detection not found: " + id)));
+    }
+
+    private String calculateVerdict(DetectResponse.Summary summary) {
+        if (summary == null) return "UNKNOWN";
+        Double human = summary.getHuman();
+        Double ai = summary.getAi();
+        if (human != null && human >= 0.5) return "HUMAN";
+        if (ai != null && ai >= 0.5) return "AI";
+        return "MIXED";
     }
 }
