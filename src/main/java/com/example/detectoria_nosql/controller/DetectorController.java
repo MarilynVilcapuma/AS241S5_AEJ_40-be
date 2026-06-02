@@ -5,6 +5,7 @@ import com.example.detectoria_nosql.dto.DetectionResultResponse;
 import com.example.detectoria_nosql.dto.UpdateDetectionRequest;
 import com.example.detectoria_nosql.model.DetectionDocument;
 import com.example.detectoria_nosql.service.RapidApiDetectorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class DetectorController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<DetectionResultResponse>> detect(@RequestBody DetectRequest request) {
+    public Mono<ResponseEntity<DetectionResultResponse>> detect(@Valid @RequestBody DetectRequest request) {
         return detectorService.detectText(request)
                 .map(ResponseEntity::ok);
     }

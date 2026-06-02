@@ -1,5 +1,6 @@
 package com.example.detectoria_nosql.model;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -15,6 +16,7 @@ public class DetectionDocument {
     @Id
     private String id;
 
+    @Size(max = 5000)
     private String inputText;
     private String verdict;
     private Double humanScore;

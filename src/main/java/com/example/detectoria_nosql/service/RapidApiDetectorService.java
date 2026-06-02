@@ -101,9 +101,9 @@ public class RapidApiDetectorService {
                             .thenReturn(new DetectionResultResponse(verdict, humanScore, aiScore, response.getTotalNumWords(), response.getLang()));
                 })
                 .onErrorResume(WebClientResponseException.class, ex -> {
-                    log.error("RapidAPI error: {} - {}", ex.getStatusCode(), ex.getResponseBodyAsString());
+                    log.error("RapidAPI error: status={}", ex.getStatusCode());
                     return Mono.error(new IllegalStateException(
-                            "RapidAPI request failed: " + ex.getStatusCode() + " " + ex.getResponseBodyAsString(), ex));
+                            "RapidAPI request failed with status: " + ex.getStatusCode(), ex));
                 });
     }
 

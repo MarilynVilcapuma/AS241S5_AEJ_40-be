@@ -1,0 +1,66 @@
+name: CodeQL Security Analysis
+
+on:
+  push:
+    branches:
+      - develop
+      - Api_Instagram
+  pull_request:
+    branches:
+      - develop
+      - Api_Instagram
+  schedule:
+    # Ejecutar todos los días a las 8:00 AM hora Perú (UTC-5) → 1:00 PM UTC
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  codeql-analysis:
+    name: CodeQL - Analyze Java Source Code
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write   # Para subir resultados a GitHub Security
+      actions: read
+      contents: read
+
+    steps:
+
+      # =========================================================
+      # PASO 1: Checkout del código
+      # =========================================================
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # =========================================================
+      # PASO 2: Configurar Java 17
+      # =========================================================
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # =========================================================
+      # PASO 3: Inicializar CodeQL para Java
+      # =========================================================
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+          queries: security-and-quality  # Analiza seguridad + calidad
+
+      # =========================================================
+      # PASO 4: Compilar el proyecto
+      # =========================================================
+      - name: Build Project
+        run: mvn clean package -DskipTests -B
+
+      # =========================================================
+      # PASO 5: Ejecutar análisis CodeQL sobre el código fuente
+      # =========================================================
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java"
