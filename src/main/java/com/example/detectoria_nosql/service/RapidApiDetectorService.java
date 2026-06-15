@@ -76,6 +76,8 @@ public class RapidApiDetectorService {
     }
 
     public Mono<DetectionResultResponse> detectText(DetectRequest request) {
+        // VULNERABILIDAD DE PRUEBA: Log Injection con input del usuario
+        log.info("Procesando texto del usuario: " + request.getText());
         return webClient.post()
                 .uri(endpointPath)
                 .header("X-RapidAPI-Key", apiKey)
